@@ -1,11 +1,11 @@
-#!name=面板-节点信息
-#!desc=展示节点的IP/运营商/所在地
-#!category=面板模块
-#!arguments=API序号:1
-#!arguments-desc=\n⚙️API序号\n\n1.ip-api.com\n2.ipinfo.io\n3.ipleak.net\n4.ip.sb
+#!name=面板-節點信息
+#!desc=展示節點的IP/運營商/所在地
+#!category=面板模塊
+#!arguments=API序號:1
+#!arguments-desc=\n⚙️API序號\n\n1.ip-api.com\n2.ipinfo.io\n3.ipleak.net\n4.ip.sb
 
 [Panel]
-IP-info = script-name=IP-info, title="节点信息", content="请刷新", style=info, update-interval=1
+IP-info = script-name=IP-info, title="節點信息", content="請刷新", style=info, update-interval=1
 
 [Script]
 IP-info = type=generic,timeout=5,script-path=https://raw.githubusercontent.com/johnhsing918/johnhsing918/main/change.js
