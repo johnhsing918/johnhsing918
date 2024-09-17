@@ -7,7 +7,7 @@ const url = "https://ipinfo.io/json?token=bcda261f72039f";
 
 $httpClient.get(url, (error, response, data) => {
     if (error) {
-        console.error('请求错误：', error);
+        console.error('請求錯誤：', error);
         return $done();
     }
 
@@ -21,15 +21,15 @@ $httpClient.get(url, (error, response, data) => {
         let cleanedIsp = cleanIspInfo(isp);
 
         const body = {
-            title: "节点信息",
-            content: `IP地址：${ip}\n运营商：${cleanedIsp}\n所在地：${location}`,
+            title: "節點信息",
+            content: `IP地址：${ip}\n運營商：${cleanedIsp}\n所在地：${location}`,
             icon: "globe.asia.australia",
             'icon-color': '#3D90ED'
         };
 
         $done(body);
     } catch (e) {
-        console.error('解析错误：', e);
+        console.error('解析錯誤：', e);
         $done();
     }
 });
