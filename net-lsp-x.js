@@ -7,31 +7,31 @@ if (typeof $argument != 'undefined') {
 } else {
   arg = {}
 }
-$.log(`传入的 $argument: ${$.toStr(arg)}`)
+$.log(`傳入的 $argument: ${$.toStr(arg)}`)
 // if (typeof $loon === 'string') {
 //   // const build = $loon.match(/\(\s*?(\d+)\s*?\)\s*?$/)?.[1]
 //   // $.log(`当前 Loon Build: ${build}`)
-//   $.log(`当前版本: ${$loon}`)
+//   $.log(`當前版本: ${$loon}`)
 // }
 
 arg = { ...arg, ...$.getjson(NAME, {}) }
 
-$.log(`从持久化存储读取参数后: ${$.toStr(arg)}`)
+$.log(`從持久化存儲讀取參數後: ${$.toStr(arg)}`)
 
 if (typeof $environment !== 'undefined' && $.lodash_get($environment, 'executor') === 'event-network') {
-  $.log(`QX 事件脚本不能带参 修正运行环境`)
+  $.log(`QX 事件腳本不能带參 修正運行環境`)
   $.lodash_set(arg, 'TYPE', 'EVENT')
 }
 
 if (!isInteraction() && !isRequest() && !isTile() && !isPanel()) {
-  $.log(`参数为空 非可交互操作, 非请求, 非面板的情况下, 修正运行环境`)
+  $.log(`參數為空 非可交互操作, 非請求, 非面板的情况下, 修正運行環境`)
   $.lodash_set(arg, 'TYPE', 'EVENT')
 }
 
 if (isRequest()) {
   // $.log($.toStr($request))
   arg = { ...arg, ...parseQueryString($request.url) }
-  $.log(`从请求后读取参数后: ${$.toStr(arg)}`)
+  $.log(`從請求後讀取參數後: ${$.toStr(arg)}`)
 }
 
 const keya = 'spe'
@@ -51,13 +51,13 @@ let content = ''
 !(async () => {
   if ($.lodash_get(arg, 'TYPE') === 'EVENT') {
     const eventDelay = parseFloat($.lodash_get(arg, 'EVENT_DELAY') || 3)
-    $.log(`网络变化, 等待 ${eventDelay} 秒后开始查询`)
+    $.log(`網路變化, 等待 ${eventDelay} 秒後開始查詢`)
     if (eventDelay) {
       await $.wait(1000 * eventDelay)
     }
   }
   if (isTile()) {
-    await notify('网络信息', '面板', '开始查询')
+    await notify('網路信息', '面板', '開始查詢')
   }
 
   let SSID = ''
@@ -130,11 +130,11 @@ let content = ''
       PROXY_IP !== $.lodash_get(lastNetworkInfoEvent, 'PROXY_IP') ||
       PROXY_IPv6 !== $.lodash_get(lastNetworkInfoEvent, 'PROXY_IPv6')
     ) {
-      // 有任何一项不同 都继续
+      // 有任何一項不同 都繼續
       $.setjson({ CN_IP, PROXY_IP, CN_IPv6, PROXY_IPv6 }, 'lastNetworkInfoEvent')
     } else {
-      // 否则 直接结束
-      $.log('网络信息未发生变化, 不继续')
+      // 否則 直接結束
+      $.log('網路信息未發生變化, 不繼續')
       continueFlag = false
     }
   }
@@ -152,7 +152,7 @@ let content = ''
     }
     if (ENTRANCE_IP && ENTRANCE_IP !== PROXY_IP) {
       const entranceDelay = parseFloat($.lodash_get(arg, 'ENTRANCE_DELAY') || 0)
-      $.log(`入口: ${ENTRANCE_IP} 与落地 IP: ${PROXY_IP} 不一致, 等待 ${entranceDelay} 秒后查询入口`)
+      $.log(`入口: ${ENTRANCE_IP} 與落地 IP: ${PROXY_IP} 不一致, 等待 ${entranceDelay} 秒後查詢入口`)
       if (entranceDelay) {
         await $.wait(1000 * entranceDelay)
       }
@@ -161,7 +161,7 @@ let content = ''
           getDirectInfo(ENTRANCE_IP, $.lodash_get(arg, 'DOMESTIC_IPv4')),
           getProxyInfo(ENTRANCE_IP, $.lodash_get(arg, 'LANDING_IPv4')),
         ])
-      // 国内接口的国外 IP 解析过于离谱 排除掉
+      // 國內接口的國外 IP 解析過於離譜 排除掉
       if (ENTRANCE_INFO1 && isCN) {
         ENTRANCE = `入口: ${maskIP(ENTRANCE_IP) || '-'}\n${maskAddr(ENTRANCE_INFO1)}`
       }
@@ -200,9 +200,9 @@ let content = ''
     if (CN_INFO) {
       CN_INFO = `\n${CN_INFO}`
     }
-    const policy_prefix = $.isQuanX() || $.isLoon() ? '节点: ' : '代理策略: '
+    const policy_prefix = $.isQuanX() || $.isLoon() ? '節點: ' : '代理策略: '
     if (PROXY_POLICY === 'DIRECT') {
-      PROXY_POLICY = `${policy_prefix}直连`
+      PROXY_POLICY = `${policy_prefix}直連`
     } else if (PROXY_POLICY) {
       PROXY_POLICY = `${policy_prefix}${maskAddr(PROXY_POLICY) || '-'}`
     } else {
@@ -225,18 +225,18 @@ let content = ''
       content = `${content}\n执行时间: ${new Date().toTimeString().split(' ')[0]}`
     }
 
-    title = title || '网络信息 𝕏'
+    title = title || '網路信息 𝕏'
     if (isTile()) {
-      await notify('网络信息', '面板', '查询完成')
+      await notify('網路信息', '面板', '查詢完成')
     } else if (!isPanel()) {
       if ($.lodash_get(arg, 'TYPE') === 'EVENT') {
         await notify(
           `🄳 ${maskIP(CN_IP) || '-'} 🅿 ${maskIP(PROXY_IP) || '-'}`.replace(/\n+/g, '\n').replace(/\ +/g, ' ').trim(),
-          `${maskAddr(CN_INFO.replace(/(位置|运营商).*?:/g, '').replace(/\n/g, ' '))}`
+          `${maskAddr(CN_INFO.replace(/(位置|運營商).*?:/g, '').replace(/\n/g, ' '))}`
             .replace(/\n+/g, '\n')
             .replace(/\ +/g, ' ')
             .trim(),
-          `${maskAddr(PROXY_INFO.replace(/(位置|运营商).*?:/g, '').replace(/\n/g, ' '))}${
+          `${maskAddr(PROXY_INFO.replace(/(位置|運營商).*?:/g, '').replace(/\n/g, ' '))}${
             CN_IPv6 ? `\n🄳 ${CN_IPv6.replace(/\n+/g, '')}` : ''
           }${PROXY_IPv6 ? `\n🅿 ${PROXY_IPv6.replace(/\n+/g, '')}` : ''}${SSID ? `\n${SSID}` : '\n'}${LAN}`
             .replace(/\n+/g, '\n')
@@ -244,7 +244,7 @@ let content = ''
             .trim()
         )
       } else {
-        await notify('网络信息 𝕏', title, content)
+        await notify('網路信息 𝕏', title, content)
       }
     }
   }
@@ -255,7 +255,7 @@ let content = ''
     const msg = `${$.lodash_get(e, 'message') || $.lodash_get(e, 'error') || e}`
     title = `❌`
     content = msg
-    await notify('网络信息 𝕏', title, content)
+    await notify('網路信息 𝕏', title, content)
   })
   .finally(async () => {
     if (isRequest()) {
@@ -290,7 +290,7 @@ let content = ''
         .replace(/\n/g, '<br/>')}</div>`
       // $.log(html)
       $.done({
-        title: '网络信息 𝕏',
+        title: '網路信息 𝕏',
         htmlMessage: html,
       })
     } else {
@@ -317,7 +317,7 @@ async function getEntranceInfo() {
         POLICY = $.lodash_get($environment, 'params.node')
       }
     } catch (e) {
-      $.logErr(`获取入口信息 发生错误: ${e.message || e}`)
+      $.logErr(`獲取入口信息 發生錯誤: ${e.message || e}`)
       $.logErr(e)
       $.logErr($.toStr(e))
     }
@@ -385,7 +385,7 @@ async function getRequestInfo(regexp, PROXIES = []) {
       IP = PROXIES?.[proxy]?.match(/^(.*?):\d+$/)?.[1]
     }
   } catch (e) {
-    $.logErr(`从最近请求中获取 ${regexp} 发生错误: ${e.message || e}`)
+    $.logErr(`從最近請求中獲取 ${regexp} 發生錯誤: ${e.message || e}`)
     $.logErr(e)
     $.logErr($.toStr(e))
   }
@@ -418,12 +418,12 @@ async function getRequestInfo(regexp, PROXIES = []) {
         ]
           .filter(i => i)
           .join(' '),
-        ['运营商:', $.lodash_get(body, 'result.operator')].filter(i => i).join(' '),
+        ['運營商:', $.lodash_get(body, 'result.operator')].filter(i => i).join(' '),
       ]
         .filter(i => i)
         .join('\n')
     } catch (e) {
-      $.logErr(`${msg} 发生错误: ${e.message || e}`)
+      $.logErr(`${msg} 發生錯誤: ${e.message || e}`)
     }
   } else if (!ip && provider == 'ip233') {
     try {
@@ -444,15 +444,15 @@ async function getRequestInfo(regexp, PROXIES = []) {
       isCN = countryCode === 'CN'
       CN_IP = $.lodash_get(body, 'ip')
       CN_INFO = CN_INFO = [
-        ['位置:', getflag(countryCode), $.lodash_get(body, 'desc').replace(/中国\s*/, '')].filter(i => i).join(' '),
+        ['位置:', getflag(countryCode), $.lodash_get(body, 'desc').replace(/中國\s*/, '')].filter(i => i).join(' '),
         $.lodash_get(arg, 'ORG') == 1
-          ? ['组织:', $.lodash_get(body, 'org') || '-'].filter(i => i).join(' ')
+          ? ['組織:', $.lodash_get(body, 'org') || '-'].filter(i => i).join(' ')
           : undefined,
       ]
         .filter(i => i)
         .join('\n')
     } catch (e) {
-      $.logErr(`${msg} 发生错误: ${e.message || e}`)
+      $.logErr(`${msg} 發生錯誤: ${e.message || e}`)
     }
   } else if (provider == 'muhan') {
     try {
@@ -483,12 +483,12 @@ async function getRequestInfo(regexp, PROXIES = []) {
         ]
           .filter(i => i)
           .join(' '),
-        ['运营商:', $.lodash_get(body, 'data.showapi_res_body.isp') || '-'].filter(i => i).join(' '),
+        ['運營商:', $.lodash_get(body, 'data.showapi_res_body.isp') || '-'].filter(i => i).join(' '),
       ]
         .filter(i => i)
         .join('\n')
     } catch (e) {
-      $.logErr(`${msg} 发生错误: ${e.message || e}`)
+      $.logErr(`${msg} 發生錯誤: ${e.message || e}`)
     }
   } else if (provider == 'ipim') {
     try {
@@ -497,32 +497,32 @@ async function getRequestInfo(regexp, PROXIES = []) {
       CN_IP = $.lodash_get(res, 'IP')
       CN_INFO = $.lodash_get(res, 'INFO')
     } catch (e) {
-      $.logErr(`${msg} 发生错误: ${e.message || e}`)
+      $.logErr(`${msg} 發生錯誤: ${e.message || e}`)
     }
   } else if (provider == 'ali') {
     try {
       let APPCODE = $.lodash_get(arg, 'DOMESTIC_IPv4_KEY')
-      if (!APPCODE) throw new Error('请在 DOMESTIC_IPv4_KEY 填写阿里云 IP 接口的 APPCODE')
+      if (!APPCODE) throw new Error('請在 DOMESTIC_IPv4_KEY 填寫阿里雲 IP 接口的 APPCODE')
       APPCODE = APPCODE.split(/,|，/)
         .map(i => i.trim())
         .filter(i => i)
       APPCODE = APPCODE[Math.floor(Math.random() * APPCODE.length)]
       if (APPCODE.length > 1) {
-        $.log(`随机使用阿里云 IP 接口的 APPCODE: ${APPCODE}`)
+        $.log(`隨機使用阿里雲 IP 接口的 APPCODE: ${APPCODE}`)
       }
       let ali_ip = ip
       if (!ali_ip) {
-        $.log('阿里云接口需要 IP. 未提供 IP, 先使用默认 IP 查询')
+        $.log('阿里雲接口需要 IP. 未提供 IP, 先使用默認 IP 查詢')
         const res = await getDirectInfo()
         ali_ip = $.lodash_get(res, 'CN_IP')
-        if (!ali_ip) throw new Error('阿里云接口需要 IP. 未提供 IP, 使用默认 IP 查询失败')
+        if (!ali_ip) throw new Error('阿里雲接口需要 IP. 未提供 IP, 使用默認 IP 查詢失敗')
       }
       const res = await ali(ali_ip, APPCODE)
       isCN = $.lodash_get(res, 'isCN')
       CN_IP = $.lodash_get(res, 'IP')
       CN_INFO = $.lodash_get(res, 'INFO')
     } catch (e) {
-      $.logErr(`${msg} 发生错误: ${e.message || e}`)
+      $.logErr(`${msg} 發生錯誤: ${e.message || e}`)
     }
   } else if (ip && provider == 'spcn') {
     try {
@@ -552,14 +552,14 @@ async function getRequestInfo(regexp, PROXIES = []) {
         ]
           .filter(i => i)
           .join(' '),
-        ['运营商:', $.lodash_get(body, 'data.operator') || $.lodash_get(body, 'data.isp') || '-']
+        ['運營商:', $.lodash_get(body, 'data.operator') || $.lodash_get(body, 'data.isp') || '-']
           .filter(i => i)
           .join(' '),
       ]
         .filter(i => i)
         .join('\n')
     } catch (e) {
-      $.logErr(`${msg} 发生错误: ${e.message || e}`)
+      $.logErr(`${msg} 發生錯誤: ${e.message || e}`)
     }
   } else {
     try {
@@ -589,22 +589,22 @@ async function getRequestInfo(regexp, PROXIES = []) {
         ]
           .filter(i => i)
           .join(' '),
-        ['运营商:', $.lodash_get(body, 'data.isp') || '-'].filter(i => i).join(' '),
+        ['運營商:', $.lodash_get(body, 'data.isp') || '-'].filter(i => i).join(' '),
         $.lodash_get(arg, 'ORG') == 1
-          ? ['组织:', $.lodash_get(body, 'org') || '-'].filter(i => i).join(' ')
+          ? ['組織:', $.lodash_get(body, 'org') || '-'].filter(i => i).join(' ')
           : undefined,
       ]
         .filter(i => i)
         .join('\n')
     } catch (e) {
-      $.logErr(`${msg} 发生错误: ${e.message || e}`)
+      $.logErr(`${msg} 發生錯誤: ${e.message || e}`)
     }
   }
   return { CN_IP, CN_INFO: simplifyAddr(CN_INFO), isCN }
 }
 async function getDirectInfoIPv6() {
   let CN_IPv6
-  const msg = `使用 ${$.lodash_get(arg, 'DOMESTIC_IPv6') || 'ddnspod'} 查询 IPv6 分流信息`
+  const msg = `使用 ${$.lodash_get(arg, 'DOMESTIC_IPv6') || 'ddnspod'} 查詢 IPv6 分流信息`
   if ($.lodash_get(arg, 'DOMESTIC_IPv6') == 'neu6') {
     try {
       const res = await http({
@@ -617,7 +617,7 @@ async function getDirectInfoIPv6() {
       let body = String($.lodash_get(res, 'body'))
       CN_IPv6 = body.trim()
     } catch (e) {
-      $.logErr(`${msg} 发生错误: ${e.message || e}`)
+      $.logErr(`${msg} 發生錯誤: ${e.message || e}`)
     }
   } else {
     try {
@@ -631,7 +631,7 @@ async function getDirectInfoIPv6() {
       let body = String($.lodash_get(res, 'body'))
       CN_IPv6 = body.trim()
     } catch (e) {
-      $.logErr(`${msg} 发生错误: ${e.message || e}`)
+      $.logErr(`${msg} 發生錯誤: ${e.message || e}`)
     }
   }
   return { CN_IPv6 }
@@ -641,7 +641,7 @@ async function getProxyInfo(ip, provider) {
   let PROXY_INFO
   let PROXY_PRIVACY
 
-  const msg = `使用 ${provider || 'ipapi'} 查询 ${ip ? ip : '分流'} 信息`
+  const msg = `使用 ${provider || 'ipapi'} 查詢 ${ip ? ip : '分流'} 信息`
 
   if (provider == 'ipinfo') {
     try {
@@ -663,11 +663,11 @@ async function getProxyInfo(ip, provider) {
       const companyType = $.lodash_get(body, 'company.type')
       const asnType = $.lodash_get(body, 'asn.type')
       PROXY_INFO = [
-        ['位置:', getflag(body.country), body.country.replace(/\s*中国\s*/, ''), body.region, body.city]
+        ['位置:', getflag(body.country), body.country.replace(/\s*中國\s*/, ''), body.region, body.city]
           .filter(i => i)
           .join(' '),
         [
-          '运营商:',
+          '運營商:',
           $.lodash_get(body, 'company.name') || $.lodash_get(body, 'asn.name') || '-',
           companyType ? ` | ${companyType}` : '',
         ]
@@ -675,7 +675,7 @@ async function getProxyInfo(ip, provider) {
           .join(' '),
         $.lodash_get(arg, 'ORG') == 1
           ? [
-              '组织:',
+              '組織:',
               $.lodash_get(body, 'asn.name') || $.lodash_get(body, 'org') || '-',
               asnType ? ` | ${asnType}` : '',
             ]
@@ -700,13 +700,13 @@ async function getProxyInfo(ip, provider) {
           privacy.push(`${key.toUpperCase()}: ${privacyMap[privacyObj[key]]}`)
         })
         if (privacy.length > 0) {
-          PROXY_PRIVACY = `隐私安全:\n${privacy.join('\n')}`
+          PROXY_PRIVACY = `隱私安全:\n${privacy.join('\n')}`
         } else {
-          PROXY_PRIVACY = `隐私安全: -`
+          PROXY_PRIVACY = `隱私安全: -`
         }
       }
     } catch (e) {
-      $.logErr(`${msg} 发生错误: ${e.message || e}`)
+      $.logErr(`${msg} 發生錯誤: ${e.message || e}`)
     }
   } else if (provider == 'ipscore') {
     try {
@@ -744,12 +744,12 @@ async function getProxyInfo(ip, provider) {
         ]
           .filter(i => i)
           .join(' '),
-        ['运营商:', body.isp || body.org || body.asn].filter(i => i).join(' '),
+        ['運營商:', body.isp || body.org || body.asn].filter(i => i).join(' '),
       ]
         .filter(i => i)
         .join('\n')
     } catch (e) {
-      $.logErr(`${msg} 发生错误: ${e.message || e}`)
+      $.logErr(`${msg} 發生錯誤: ${e.message || e}`)
     }
   } else if (provider == 'ipsb') {
     try {
@@ -778,9 +778,9 @@ async function getProxyInfo(ip, provider) {
           .filter(i => i)
           .join(' '),
 
-        ['运营商:', body.isp || body.organization].filter(i => i).join(' '),
+        ['運營商:', body.isp || body.organization].filter(i => i).join(' '),
         $.lodash_get(arg, 'ORG') == 1
-          ? ['组织:', $.lodash_get(body, 'asn_organization') || '-'].filter(i => i).join(' ')
+          ? ['組織:', $.lodash_get(body, 'asn_organization') || '-'].filter(i => i).join(' ')
           : undefined,
 
         $.lodash_get(arg, 'ASN') == 1 ? ['ASN:', $.lodash_get(body, 'asn') || '-'].filter(i => i).join(' ') : undefined,
@@ -788,7 +788,7 @@ async function getProxyInfo(ip, provider) {
         .filter(i => i)
         .join('\n')
     } catch (e) {
-      $.logErr(`${msg} 发生错误: ${e.message || e}`)
+      $.logErr(`${msg} 發生錯誤: ${e.message || e}`)
     }
   } else if (provider == 'ipwhois') {
     try {
@@ -824,9 +824,9 @@ async function getProxyInfo(ip, provider) {
         ['位置:', getflag(body.country_code), body.country.replace(/\s*中国\s*/, ''), body.region, body.city]
           .filter(i => i)
           .join(' '),
-        ['运营商:', $.lodash_get(body, 'connection.isp') || '-'].filter(i => i).join(' '),
+        ['運營商:', $.lodash_get(body, 'connection.isp') || '-'].filter(i => i).join(' '),
         $.lodash_get(arg, 'ORG') == 1
-          ? ['组织:', $.lodash_get(body, 'connection.org') || '-'].filter(i => i).join(' ')
+          ? ['組織:', $.lodash_get(body, 'connection.org') || '-'].filter(i => i).join(' ')
           : undefined,
 
         $.lodash_get(arg, 'ASN') == 1
@@ -847,13 +847,13 @@ async function getProxyInfo(ip, provider) {
           security.push(`${key.toUpperCase()}: ${securityMap[securityObj[key]]}`)
         })
         if (security.length > 0) {
-          PROXY_PRIVACY = `隐私安全:\n${security.join('\n')}`
+          PROXY_PRIVACY = `隱私安全:\n${security.join('\n')}`
         } else {
-          PROXY_PRIVACY = `隐私安全: -`
+          PROXY_PRIVACY = `隱私安全: -`
         }
       }
     } catch (e) {
-      $.logErr(`${msg} 发生错误: ${e.message || e}`)
+      $.logErr(`${msg} 發生錯誤: ${e.message || e}`)
     }
   } else {
     try {
@@ -882,9 +882,9 @@ async function getProxyInfo(ip, provider) {
         ]
           .filter(i => i)
           .join(' '),
-        ['运营商:', body.isp || body.org || body.as].filter(i => i).join(' '),
+        ['運營商:', body.isp || body.org || body.as].filter(i => i).join(' '),
         $.lodash_get(arg, 'ORG') == 1
-          ? ['组织:', $.lodash_get(body, 'org') || '-'].filter(i => i).join(' ')
+          ? ['組織:', $.lodash_get(body, 'org') || '-'].filter(i => i).join(' ')
           : undefined,
 
         $.lodash_get(arg, 'ASN') == 1 ? ['ASN:', $.lodash_get(body, 'as') || '-'].filter(i => i).join(' ') : undefined,
@@ -892,7 +892,7 @@ async function getProxyInfo(ip, provider) {
         .filter(i => i)
         .join('\n')
     } catch (e) {
-      $.logErr(`${msg} 发生错误: ${e.message || e}`)
+      $.logErr(`${msg} 發生錯誤: ${e.message || e}`)
     }
   }
 
@@ -900,7 +900,7 @@ async function getProxyInfo(ip, provider) {
 }
 async function getProxyInfoIPv6(ip) {
   let PROXY_IPv6
-  const msg = `使用 ${$.lodash_get(arg, 'LANDING_IPv6') || 'ipsb'} 查询 IPv6 分流信息`
+  const msg = `使用 ${$.lodash_get(arg, 'LANDING_IPv6') || 'ipsb'} 查詢 IPv6 分流信息`
   if ($.lodash_get(arg, 'LANDING_IPv6') == 'ident') {
     try {
       const res = await http({
@@ -915,7 +915,7 @@ async function getProxyInfoIPv6(ip) {
       let body = String($.lodash_get(res, 'body'))
       PROXY_IPv6 = body.trim()
     } catch (e) {
-      $.logErr(`${msg} 发生错误: ${e.message || e}`)
+      $.logErr(`${msg} 發生錯誤: ${e.message || e}`)
     }
   } else if ($.lodash_get(arg, 'LANDING_IPv6') == 'ipify') {
     try {
@@ -931,7 +931,7 @@ async function getProxyInfoIPv6(ip) {
       let body = String($.lodash_get(res, 'body'))
       PROXY_IPv6 = body.trim()
     } catch (e) {
-      $.logErr(`${msg} 发生错误: ${e.message || e}`)
+      $.logErr(`${msg} 發生錯誤: ${e.message || e}`)
     }
   } else {
     try {
@@ -947,7 +947,7 @@ async function getProxyInfoIPv6(ip) {
       let body = String($.lodash_get(res, 'body'))
       PROXY_IPv6 = body.trim()
     } catch (e) {
-      $.logErr(`${msg} 发生错误: ${e.message || e}`)
+      $.logErr(`${msg} 發生錯誤: ${e.message || e}`)
     }
   }
 
@@ -971,12 +971,12 @@ async function ipim(ip) {
   const isp = body.match(/(^|\s+)Isp\s*(:|：)\s*(.*)/m)?.[3]
   const org = body.match(/(^|\s+)Org\s*(:|：)\s*(.*)/m)?.[3]
 
-  isCN = country.includes('中国')
+  isCN = country.includes('中國')
 
   INFO = [
     ['位置:', isCN ? getflag('CN') : getflag(country), country, province, city, district].filter(i => i).join(' '),
-    ['运营商:', isp || '-'].filter(i => i).join(' '),
-    $.lodash_get(arg, 'ORG') == 1 ? ['组织:', org || '-'].filter(i => i).join(' ') : undefined,
+    ['運營商:', isp || '-'].filter(i => i).join(' '),
+    $.lodash_get(arg, 'ORG') == 1 ? ['組織:', org || '-'].filter(i => i).join(' ') : undefined,
   ]
     .filter(i => i)
     .join('\n')
@@ -1030,10 +1030,10 @@ function maskAddr(addr) {
     const parts = addr.split(' ')
 
     if (parts.length >= 3) {
-      // 如果有两个或更多的空格，按空格分组后将中间的部分替换为"*"
+      // 如果有兩個或更多的空格，按空格分組後將中間的部分替換為"*"
       result = [parts[0], '*', parts[parts.length - 1]].join(' ')
     } else {
-      // 如果空格少于2个，将字符串三等分，将中间的部分替换为"*"
+      // 如果空格少於2個，將字符串三等分，將中間的部分替換為"*"
       const third = Math.floor(addr.length / 3)
       result = addr.substring(0, third) + '*'.repeat(third) + addr.substring(2 * third)
     }
@@ -1068,7 +1068,7 @@ function getflag(e) {
         .toUpperCase()
         .split('')
         .map(e => 127397 + e.charCodeAt())
-// 保持台湾国旗不变
+// 保持台灣國旗不變
       return String.fromCodePoint(...t)
     } catch (e) {
       return ''
@@ -1077,17 +1077,17 @@ function getflag(e) {
     return ''
   }
 }
-// 参数 与其他脚本逻辑一致
+// 參數 與其他腳本邏輯一致
 function parseQueryString(url) {
-  const queryString = url.split('?')[1] // 获取查询字符串部分
-  const regex = /([^=&]+)=([^&]*)/g // 匹配键值对的正则表达式
+  const queryString = url.split('?')[1] // 獲取查詢字符串部分
+  const regex = /([^=&]+)=([^&]*)/g // 匹配鍵值對的正則表達式
   const params = {}
   let match
 
   while ((match = regex.exec(queryString))) {
-    const key = decodeURIComponent(match[1]) // 解码键
-    const value = decodeURIComponent(match[2]) // 解码值
-    params[key] = value // 将键值对添加到对象中
+    const key = decodeURIComponent(match[1]) // 解碼鍵
+    const value = decodeURIComponent(match[2]) // 解碼值
+    params[key] = value // 將鍵值對添加到對象中
   }
 
   return params
@@ -1110,7 +1110,7 @@ const DOMAIN_RESOLVERS = {
     }
     const answers = body['Answer']
     if (answers.length === 0) {
-      throw new Error('域名解析无结果')
+      throw new Error('域名解析無結果')
     }
     return answers[answers.length - 1].data
   },
@@ -1132,7 +1132,7 @@ const DOMAIN_RESOLVERS = {
     }
     const answers = body['Answer']
     if (answers.length === 0) {
-      throw new Error('域名解析无结果')
+      throw new Error('域名解析無結果')
     }
     return answers[answers.length - 1].data
   },
@@ -1151,7 +1151,7 @@ const DOMAIN_RESOLVERS = {
     })
     const answers = JSON.parse(resp.body)
     if (answers.length === 0) {
-      throw new Error('域名解析无结果')
+      throw new Error('域名解析無結果')
     }
     return answers[answers.length - 1]
   },
@@ -1169,7 +1169,7 @@ const DOMAIN_RESOLVERS = {
     })
     const answers = resp.body.split(';').map(i => i.split(',')[0])
     if (answers.length === 0 || String(answers) === '0') {
-      throw new Error('域名解析无结果')
+      throw new Error('域名解析無結果')
     }
     return answers[answers.length - 1]
   },
@@ -1194,14 +1194,14 @@ async function resolveDomain(domain) {
         try {
           return await resolver(domain, 'IPv4')
         } catch (e) {
-          // $.logErr(`${msg} 发生错误: ${e.message || e}`)
+          // $.logErr(`${msg} 發生錯誤: ${e.message || e}`)
         }
       })(),
       (async () => {
         try {
           return await resolver(domain, 'IPv6')
         } catch (e) {
-          // $.logErr(`${msg} 发生错误: ${e.message || e}`)
+          // $.logErr(`${msg} 發生錯誤: ${e.message || e}`)
         }
       })(),
     ])
@@ -1210,12 +1210,12 @@ async function resolveDomain(domain) {
     if (isIPv4(v4)) {
       IPv4 = v4
     } else {
-      $.logErr(`${msg} 解析 IPv4 失败`)
+      $.logErr(`${msg} 解析 IPv4 失敗`)
     }
     if (isIPv6(v6)) {
       IPv6 = v6
     } else {
-      $.logErr(`${msg} 解析 IPv6 失败`)
+      $.logErr(`${msg} 解析 IPv6 失敗`)
     }
   }
   return { IP: IPv4 || IPv6, IPv4, IPv6 }
@@ -1309,7 +1309,7 @@ function getNodeOpt() {
   }
   return opt
 }
-// 请求
+// 請求
 async function http(opt = {}) {
   const TIMEOUT = parseFloat(opt.timeout || $.lodash_get(arg, 'TIMEOUT') || 5)
   const RETRIES = parseFloat(opt.retries || $.lodash_get(arg, 'RETRIES') || 1)
@@ -1322,7 +1322,7 @@ async function http(opt = {}) {
   const fn = async () => {
     try {
       if (TIMEOUT) {
-        // Surge, Loon, Stash 默认为 5 秒
+        // Surge, Loon, Stash 默認為 5 秒
         return await Promise.race([
           $.http.get({ ...opt, timeout }),
           new Promise((_, reject) => setTimeout(() => reject(new Error('HTTP TIMEOUT')), TIMEOUT * 1000)),
@@ -1332,7 +1332,7 @@ async function http(opt = {}) {
     } catch (e) {
       if (count < RETRIES) {
         count++
-        $.log(`第 ${count} 次请求失败: ${e.message || e}, 等待 ${RETRY_DELAY}s 后重试`)
+        $.log(`第 ${count} 次請求失敗: ${e.message || e}, 等待 ${RETRY_DELAY}s 後重試`)
         await $.wait(RETRY_DELAY * 1000)
         return await fn()
       }
