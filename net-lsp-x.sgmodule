@@ -1,0 +1,21 @@
+#!name=網路信息 𝕏
+#!desc=國內外 IP, 運營商, ASN, ORG, 位置, 策略; IPv6; 入口落地; 隱私; LAN; SSID. 自己設置對應域名的分流. 支持網路變化時進行查詢通知. 提供 https://net-lsp-x.com 數據接口, 參數與模塊參數相同. https://t.me/zhetengsha
+#!author=@keywos @xream https://t.me/zhetengsha
+#!arguments=DOMESTIC_IPv4:spcn,DOMESTIC_IPv4_KEY:若接口需要就填這裡,DOMESTIC_IPv6:ddnspod,LANDING_IPv4:ipapi,LANDING_IPv6:ipsb,DNS:ali,FLAG:1,ASN:0,ORG:0,PRIVACY:0,LAN:0,SSID:0,IPv6:0,MASK:0,TIMEOUT:5,RETRIES:1,RETRY_DELAY:1,ENTRANCE_DELAY:0,EVENT_SCRIPT_NAME:網路信息變化,EVENT_DELAY:3,PANEL_NAME:網路信息面板,UPDATE-INTERVAL:-1,ICON:globe.asia.australia,ICON-COLOR:#6699FF
+#!arguments-desc=1 為開啟, 0 為關閉\n\nLAN:\n顯示 LAN IP\n\nSSID:\n顯示 SSID\n\nIPv6:\n顯示 IPv6 地址\n\nMASK:\n打碼 保護隱私\n\nDOMESTIC_IPv4:\n國內 IPv4 來源, 可選 spcn(請設置分流 DOMAIN-SUFFIX,speedtest.cn), cip, bilibili, 126, ipip, ip233, pingan, qixin, muhan, ipim(請設置分流 DOMAIN-SUFFIX,ip.im), ali(将阿里雲 IP 服務的 APPCODE 填到 DOMESTIC_IPv4_KEY)\n\nDOMESTIC_IPv4_KEY:\n若接口需要就填(多个 key 用 , 分隔)\n\nDOMESTIC_IPv6:\n國內 IPv6 來源, 可選 ddnspod, neu6\n\nLANDING_IPv4:\n落地 IPv4 來源, 可選 ipapi, ipsb, ipinfo, ipscore, ipwhois\n\nLANDING_IPv6:\n落地 IPv6 來源, 可選 ipsb, ident, ipify\n\nDNS:\n解析域名, 可選 google, cf, ali, tencent\n\nASN:\n顯示 ASN 信息\n\nORG:\n顯示 ORG 信息\n\nPRIVACY:\n 當落地為 ipwhois, ipinfo 时)顯示 Privacy/Security 等信息\n\nFLAG:\n是否顯示國旗\n\nTIMEOUT:\n超時設置(单位: 秒)\n\nRETRIES:\n請求重試次數\n\nRETRY_DELAY:\n請求重試等待時間(单位: 秒)\n\nENTRANCE_DELAY:\n查詢落地之後緊接著查詢入口可能會導致請求太頻繁而風控\n可適當調節此延時(單位: 秒)\n\nEVENT_SCRIPT_NAME:\n網路變化時進行查詢通知的腳本名称\n若要禁用此腳本, 請輸入 #\n\nEVENT_DELAY:\n網路變化時, 延後查詢信息(單位: 秒)\n\nPANEL_NAME:\n網路信息面板名稱\n若要禁用此面板, 請輸入 #\n\nUPDATE-INTERVAL:\n面板刷新時間\n你可以在這裡指定一个小的時間（例如1），以使面板每次自動更新。
+
+[MITM]
+hostname = %APPEND% net-lsp-x.com
+
+[Script]
+# Request
+網路信息請求 = type=http-request,pattern=^https?:\/\/net-lsp-x\.com,script-path=https://raw.githubusercontent.com/xream/scripts/main/surge/modules/network-info/net-lsp-x.js,timeout=120
+
+# Event
+{{{EVENT_SCRIPT_NAME}}} = type=event,event-name=network-changed,timeout=120,script-path=https://raw.githubusercontent.com/xream/scripts/main/surge/modules/network-info/net-lsp-x.js,argument="TYPE=EVENT&icon={{{ICON}}}&icon-color={{{ICON-COLOR}}}&LAN={{{LAN}}}&SSID={{{SSID}}}&IPv6={{{IPv6}}}&MASK={{{MASK}}}&DOMESTIC_IPv4={{{DOMESTIC_IPv4}}}&DOMESTIC_IPv6={{{DOMESTIC_IPv6}}}&LANDING_IPv4={{{LANDING_IPv4}}}&LANDING_IPv6={{{LANDING_IPv6}}}&PRIVACY={{{PRIVACY}}}&FLAG={{{FLAG}}}&ENTRANCE_DELAY={{{ENTRANCE_DELAY}}}&TIMEOUT={{{TIMEOUT}}}&EVENT_DELAY={{{EVENT_DELAY}}}&RETRIES={{{RETRIES}}}&RETRY_DELAY={{{RETRY_DELAY}}}&ASN={{{ASN}}}&ORG={{{ORG}}}&DOMESTIC_IPv4_KEY={{{DOMESTIC_IPv4_KEY}}}"
+
+# Panel
+網路信息面板 = type=generic,timeout=120,script-path=https://raw.githubusercontent.com/xream/scripts/main/surge/modules/network-info/net-lsp-x.js,argument="icon={{{ICON}}}&icon-color={{{ICON-COLOR}}}&LAN={{{LAN}}}&SSID={{{SSID}}}&IPv6={{{IPv6}}}&MASK={{{MASK}}}&DOMESTIC_IPv4={{{DOMESTIC_IPv4}}}&DOMESTIC_IPv6={{{DOMESTIC_IPv6}}}&LANDING_IPv4={{{LANDING_IPv4}}}&LANDING_IPv6={{{LANDING_IPv6}}}&PRIVACY={{{PRIVACY}}}&FLAG={{{FLAG}}}&ENTRANCE_DELAY={{{ENTRANCE_DELAY}}}&TIMEOUT={{{TIMEOUT}}}&EVENT_DELAY={{{EVENT_DELAY}}}&RETRIES={{{RETRIES}}}&RETRY_DELAY={{{RETRY_DELAY}}}&ASN={{{ASN}}}&ORG={{{ORG}}}&DOMESTIC_IPv4_KEY={{{DOMESTIC_IPv4_KEY}}}"
+
+[Panel]
+{{{PANEL_NAME}}} = script-name=網路信息面板,update-interval={{{UPDATE-INTERVAL}}}
