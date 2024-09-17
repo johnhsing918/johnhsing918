@@ -1061,20 +1061,27 @@ function maskIP(ip) {
   }
 }
 
-function getflag(e) {
+function getflag(e, arg) {
   if ($.lodash_get(arg, 'FLAG', 1) == 1) {
     try {
+      // 保持台灣國旗不變
+      if (e.toUpperCase() === 'TW') {
+        return '🇹🇼';  // 台湾国旗符号
+      }
+      
+      // 生成其他国家的国旗符号
       const t = e
         .toUpperCase()
-        .split('')
-        .map(e => 127397 + e.charCodeAt())
-      // 保持台灣國旗不變
-      return String.fromCodePoint(...t)
-    } catch (e) {
-      return ''
+        .split('')  // 将字符串按字符拆分
+        .map(e => 127397 + e.charCodeAt());  // 计算字符的 Unicode 值
+        
+      return String.fromCodePoint(...t);  // 生成表情符号
+    } catch (err) {
+      console.error('Error generating flag:', err);
+      return '';
     }
   } else {
-    return ''
+    return '';
   }
 }
 // 參數 與其他腳本邏輯一致
