@@ -1068,7 +1068,7 @@ function getflag(e) {
         .toUpperCase()
         .split('')
         .map(e => 127397 + e.charCodeAt())
-// 保持台灣國旗不變
+      // 保持台灣國旗不變
       return String.fromCodePoint(...t)
     } catch (e) {
       return ''
