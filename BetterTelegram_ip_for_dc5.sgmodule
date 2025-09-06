@@ -1,6 +1,6 @@
 #!name=修改Telegram ip for DC5
 #!desc=将Telegram糟糕的ip轉移到好的ip上
-#!category=功能性
+#!category=🐨優化TG DC5
 
 [General]
 use-local-host-item-for-proxy = true
